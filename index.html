@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sorting Visualizer</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin-top: 20px;
+  font-size: 2.5rem;
+}
+
+.container {
+  margin: 40px auto;
+  padding: 30px;
+  width: 85%;
+  max-width: 900px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(0,255,204,0.1);
+}
+
+input, select {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  background: #00adb5;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #007b80;
+  transform: scale(1.05);
+}
+
+#array {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 300px;
+  margin-top: 40px;
+  gap: 8px;
+  padding: 20px;
+}
+
+.bar {
+  width: 30px;
+  background: linear-gradient(180deg, #00ffcc, #00adb5);
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,255,204,0.3);
+}
+
+.bar:hover {
+  transform: scale(1.05);
+}
+
+#result {
+  margin-top: 25px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #00ffcc;
+}
+
+#controls {
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Sorting Visualizer</h1>
+
+<div class="container">
+
+<input type="text" id="numbers" placeholder="Enter numbers (e.g. 5 3 8 1)">
+<select id="algo">
+  <option value="bubble">Bubble Sort</option>
+</select>
+
+<button onclick="visualize()">Visualize</button>
+<button onclick="startSort()">Sort</button>
+
+<div id="controls">
+  Speed:
+  <input type="range" id="speed" min="50" max="500" value="200">
+</div>
+
+<div id="array"></div>
+
+<p id="result"></p>
+
+</div>
+
+<script>
+
+let currentArray = [];
+
+function parseInput() {
+  return document.getElementById("numbers").value
+    .split(/[ ,]+/)
+    .map(Number)
+    .filter(n => !isNaN(n));
+}
+
+function drawBars(arr) {
+  const container = document.getElementById("array");
+  container.innerHTML = "";
+
+  const max = Math.max(...arr);
+
+  arr.forEach(val => {
+    const bar = document.createElement("div");
+    bar.classList.add("bar");
+    bar.style.height = (val / max) * 250 + "px";
+    bar.innerText = val;
+    container.appendChild(bar);
+  });
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getSpeed() {
+  return document.getElementById("speed").value;
+}
+
+function visualize() {
+  currentArray = parseInput();
+  drawBars(currentArray);
+  document.getElementById("result").innerText = "Array: [" + currentArray.join(", ") + "]";
+}
+
+async function startSort() {
+
+  if (currentArray.length === 0) {
+    currentArray = parseInput();
+    drawBars(currentArray);
+  }
+
+  let arr = [...currentArray];
+  const bars = document.getElementsByClassName("bar");
+  const max = Math.max(...arr);
+
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr.length - i - 1; j++) {
+
+      bars[j].style.background = "#ff4d4d"; // compare
+      bars[j+1].style.background = "#ff4d4d";
+
+      await sleep(getSpeed());
+
+      if (arr[j] > arr[j+1]) {
+
+        bars[j].style.background = "#ffd166"; // swap
+        bars[j+1].style.background = "#ffd166";
+
+        let temp = arr[j];
+        arr[j] = arr[j+1];
+        arr[j+1] = temp;
+
+        bars[j].style.height = (arr[j] / max) * 250 + "px";
+        bars[j].innerText = arr[j];
+
+        bars[j+1].style.height = (arr[j+1] / max) * 250 + "px";
+        bars[j+1].innerText = arr[j+1];
+
+        await sleep(getSpeed());
+      }
+
+      bars[j].style.background = "linear-gradient(180deg, #00ffcc, #00adb5)";
+      bars[j+1].style.background = "linear-gradient(180deg, #00ffcc, #00adb5)";
+    }
+
+    bars[arr.length - i - 1].style.background = "#06d6a0"; // sorted
+  }
+
+  document.getElementById("result").innerText = "Sorted: [" + arr.join(", ") + "]";
+}
+
+</script>
+
+</body>
+</html>
