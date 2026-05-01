@@ -19,7 +19,7 @@ public class Sorting_Server {
 
     static class SortHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange exchange) throws IOException {
+        public void handle(HttpExchange exchange) throws IOException {   //exception handling
 
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 
