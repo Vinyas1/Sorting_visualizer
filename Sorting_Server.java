@@ -134,7 +134,7 @@ public class Sorting_Server {
             while (j < right.length) arr[k++] = right[j++];
         }
 
-        // 🔹 Quick Sort
+        //  Quick Sort
         void quickSort(int[] arr, int low, int high) {
             if (low < high) {
                 int pi = partition(arr, low, high);
